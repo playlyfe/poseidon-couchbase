@@ -5,6 +5,8 @@ and retrieved.
 
     Driver = require './driver'
     poseidon = require 'poseidon'
+    Q = require 'q'
+    _ = require 'underscore'
 
     class Bucket
       constructor: (connName) ->
@@ -14,16 +16,14 @@ and retrieved.
           'on'
           'shutdown'
           'touch'
-          'get'
-          'getAndLock'
           'unlock'
           'set'
+          'setMulti'
           'remove'
           'replace'
           'add'
           'append'
           'prepend'
-          'view'
           'incr'
           'decr'
           'observe'
@@ -37,6 +37,62 @@ and retrieved.
           @[fn] = poseidon.wrapPromise @_bucket, fn
         , @
         return
+
+      get: (keys, options) ->
+        _result = Q.defer()
+        if _.isArray keys
+          @_bucket.then (bucket) ->
+            bucket.getMulti(keys, { spooled: true }, (err, data) ->
+              if err
+                if err.code is 4101
+                  for index, key of keys
+                    _obj = data[key]
+                    if _obj.error?
+                      keys[index] = _obj.error
+                    else
+                      keys[index] = _obj.value
+                  return _result.reject keys
+                else return _result.reject err
+              metas = []
+              for index, key of keys
+                _obj = data[key]
+                keys[index] = _obj.value
+                metas.push _obj
+              _result.resolve [keys, metas]
+            )
+        else
+          @_bucket.then (bucket) ->
+            bucket.get(keys, (err, data) ->
+              if err then return _result.reject err
+              _result.resolve([data.value, data])
+            )
+        _result.promise
+
+      view: (designDoc, viewName, params) ->
+        _result = Q.defer()
+        @_bucket.then (bucket) ->
+          getView = ((bucket) ->
+            _view = bucket.view(designDoc, viewName, params)
+            _view.query (err, view) ->
+              if err?.reason is 'view_undefined'
+                getView(bucket)
+              else
+                _result.resolve(view)
+          )
+          getView(bucket)
+        .fail (err) ->
+          _result.reject err
+        .done()
+        _result.promise
+
+      getAndLock: (key, locktime) ->
+        _result = Q.defer()
+        @_bucket.then (bucket) ->
+          bucket.lock(key, locktime: locktime, (err, data) ->
+            if err? then _result.reject err
+            _result.resolve [data.value, data]
+          )
+        _result.promise
 
       end: () ->
         Driver.closeConnection @_connName

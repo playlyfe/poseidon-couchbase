@@ -1,8 +1,11 @@
 {Driver, Bucket} = require '../index'
 
-Driver.configure('default', { hosts: ['localhost:8091'], bucket: 'production' })
+Driver.configure('default', { host: ['localhost:8091'], bucket: 'production' })
 bucket = new Bucket('default')
 start = new Date()
+bucket.get(['foo'])
+.fail (err) ->
+  console.log 'foo', err
 bucket.add('test', { foo: 'bar' })
 .then ->
   #console.log 'object added'

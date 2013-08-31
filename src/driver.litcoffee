@@ -19,8 +19,15 @@ the clients for quick access and reuse.
       @openConnection: (connName) ->
         throw Error('Connection not configured') unless @_configuration[connName]?
         if @_connections[connName]? then return @_connections[connName]
-        connection = Q.ninvoke Couchbase, 'connect', @_configuration[connName]
-        connection.then =>
+        connection = (=>
+          _connection = Q.defer()
+          client = new Couchbase.Connection @_configuration[connName], (err) ->
+            if err?
+              _connection.reject err
+            else _connection.resolve client
+          _connection.promise
+        )()
+        connection.then (client) =>
           @_connections[connName] = connection
         .fail (err) =>
           @openConnection(connName)
