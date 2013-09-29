@@ -16,7 +16,6 @@ and retrieved.
           'on'
           'shutdown'
           'touch'
-          'unlock'
           'set'
           'setMulti'
           'remove'
@@ -85,13 +84,28 @@ and retrieved.
         .done()
         _result.promise
 
-      getAndLock: (key, locktime) ->
+      getAndLock: (key, locktime, retries = 10) ->
         _result = Q.defer()
-        @_bucket.then (bucket) ->
-          bucket.lock(key, locktime: locktime, (err, data) ->
-            if err? then _result.reject err
-            _result.resolve [data.value, data]
-          )
+        @_bucket.then (bucket) =>
+          bucket.lock key, locktime: locktime, (err, data) =>
+            if err?
+              if err.code is 11 and retries > 0
+                setTimeout =>
+                 _result.resolve @getAndLock(key, locktime, retries - 1)
+                , Math.random() * 30
+              else _result.reject err
+            else
+              _result.resolve [data.value, data]
+        _result.promise
+
+      unlock: (key, meta) ->
+        _result = Q.defer()
+        @_bucket.then (bucket) =>
+          bucket.unlock key, meta, (err, data) =>
+            if err?
+              _result.reject err
+            else
+              _result.resolve data
         _result.promise
 
       end: () ->
