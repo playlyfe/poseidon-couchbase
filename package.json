@@ -1,7 +1,7 @@
 {
   "name": "poseidon-couchbase",
   "description": "A future wrapper around the Couchbase driver using Poseidon.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "keywords": [
     "Q",
     "promise",
@@ -38,7 +38,7 @@
     "underscore": "~1.4.4",
     "poseidon": "*",
     "coffee-script": "~1.6.2",
-    "couchbase": "1.0.1"
+    "couchbase": "1.1.1"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
