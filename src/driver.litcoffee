@@ -36,8 +36,10 @@ the clients for quick access and reuse.
 
       @closeConnection: (connName) ->
         throw Error('Connection does not exist') unless @_connections[connName]?
-        @_connections[connName].then (bucket) -> bucket.shutdown()
-        delete @_connections[connName]
+        @_connections[connName].then (client) =>
+          client.shutdown()
+          delete @_connections[connName]
+        .done()
         return
 
       @reset: () ->
