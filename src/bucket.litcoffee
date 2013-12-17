@@ -42,7 +42,6 @@ and retrieved.
         @_bucket.then (bucket) =>
           bucket.remove key, (err, data) =>
             if err?
-              console.log "error code #{err.code}"
               err.key = key
               if err.code is 11
                 console.log "Remove failed, retrying #{key}"
@@ -65,10 +64,13 @@ and retrieved.
                     _obj = data[key]
                     if _obj.error?
                       keys[index] = _obj.error
+                      keys[index].key = key
                     else
                       keys[index] = _obj.value
                   return _result.reject keys
-                else return _result.reject err
+                else
+                  err.key = keys
+                  return _result.reject err
               values = []
               metas = []
               for index, key of keys
@@ -80,7 +82,9 @@ and retrieved.
         else
           @_bucket.then (bucket) ->
             bucket.get(keys, (err, data) ->
-              if err then return _result.reject err
+              if err
+                err.key = keys
+                return _result.reject err
               _result.resolve([data.value, data])
             )
         _result.promise
