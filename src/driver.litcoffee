@@ -16,7 +16,7 @@ the clients for quick access and reuse.
         return
 
       #TODO: Add authorization support
-      @openConnection: (connName) ->
+      @openConnection: (connName, options = {}) ->
         throw Error('Connection not configured') unless @_configuration[connName]?
         if @_connections[connName]? then return @_connections[connName]
         connection = (=>
@@ -24,7 +24,9 @@ the clients for quick access and reuse.
           client = new Couchbase.Connection @_configuration[connName], (err) ->
             if err?
               _connection.reject err
-            else _connection.resolve client
+            else
+              client.operationTimeout = options.operationTimeout ? 10000
+              _connection.resolve client
           _connection.promise
         )()
         connection.then (client) =>
