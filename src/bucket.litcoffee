@@ -52,12 +52,13 @@ and retrieved.
                       keys[index] = _obj.value
                   return _result.reject keys
                 else return _result.reject err
+              values = []
               metas = []
               for index, key of keys
                 _obj = data[key]
-                keys[index] = _obj.value
+                values[index] = _obj.value
                 metas.push _obj
-              _result.resolve [keys, metas]
+              _result.resolve [values, metas]
             )
         else
           @_bucket.then (bucket) ->
