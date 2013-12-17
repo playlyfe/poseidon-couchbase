@@ -37,6 +37,23 @@ and retrieved.
         , @
         return
 
+      safeRemove: (key, deferred) ->
+        _result = deferred ? Q.defer()
+        @_bucket.then (bucket) =>
+          bucket.remove key, (err, data) =>
+            if err?
+              console.log "error code #{err.code}"
+              err.key = key
+              if err.code is 11
+                console.log "Remove failed, retrying #{key}"
+                console.log _result.promise.isFulfilled()
+                setTimeout =>
+                  @safeRemove(key, _result)
+                , 1000
+              else _result.reject err
+            else _result.resolve(data)
+        _result.promise
+
       get: (keys, options) ->
         _result = Q.defer()
         if _.isArray keys
