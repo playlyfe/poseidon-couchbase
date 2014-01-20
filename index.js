@@ -4,9 +4,9 @@ if (process.env.PLAYLYFE_TEST) {
   try {
     index = require('./src-cov/couchbase');
   } catch(e) {
-    index = require('./src/couchbase');
+    index = require('./lib/couchbase');
   }
 } else {
-  index = require('./src/couchbase');
+  index = require('./lib/couchbase');
 }
 module.exports = index;

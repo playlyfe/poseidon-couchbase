@@ -4,7 +4,7 @@ The `Driver` class stores configurations for multiple caches. It also caches
 the clients for quick access and reuse.
 
     Couchbase = require 'couchbase'
-    Q = require 'q'
+    {Promise} = require 'poseidon'
 
 
     class Driver
@@ -20,7 +20,7 @@ the clients for quick access and reuse.
         throw Error('Connection not configured') unless @_configuration[connName]?
         if @_connections[connName]? then return @_connections[connName]
         connection = (=>
-          _connection = Q.defer()
+          _connection = Promise.pending()
           client = new Couchbase.Connection @_configuration[connName], (err) ->
             if err?
               _connection.reject err
@@ -31,7 +31,7 @@ the clients for quick access and reuse.
         )()
         connection.then (client) =>
           @_connections[connName] = connection
-        .fail (err) =>
+        .catch (err) =>
           @openConnection(connName)
 
       @closeConnection: (connName) ->
