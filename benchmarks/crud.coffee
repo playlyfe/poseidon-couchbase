@@ -42,8 +42,8 @@ nativeCb = new Couchbase.Connection({ bucket: 'staging-test', host: ["localhost:
   Driver.openConnection('default')
   .then ->
     suite
-    .add('Simple Couchbase', { fn: simpleCouchbase, defer: true, minSamples: 100 })
-    .add('Poseidon Couchbase', { fn: poseidonCouchbase, defer: true, minSamples: 100 })
+    .add('Simple Couchbase', { fn: simpleCouchbase, defer: true, minSamples: 400 })
+    .add('Poseidon Couchbase', { fn: poseidonCouchbase, defer: true, minSamples: 400 })
     .on('cycle', (event) ->
       console.log(String(event.target));
     )

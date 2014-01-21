@@ -1,11 +1,12 @@
+###
 Poseidon Couchbase
 ==================
 The **Poseidon Couchbase** module provides convenient low level memcache access
 using **Bluebird promises**.
+###
+Driver = require './driver'
+Bucket = require './connection'
 
-    Driver = require './driver'
-    Bucket = require './bucket'
-
-    module.exports =
-      Driver: Driver
-      Bucket: Bucket
+module.exports =
+  Driver: Driver
+  Bucket: Bucket

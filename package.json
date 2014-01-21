@@ -33,8 +33,11 @@
       "url": "http://www.opensource.org/licenses/MIT"
     }
   ],
+  "scripts": {
+    "prepublish": "./node_modules/coffee-script/bin/coffee src/generator.coffee"
+  },
   "dependencies": {
-    "poseidon": "0.1.0",
+    "poseidon": "0.2.1",
     "couchbase": "~1.2.0",
     "lodash": "~2.4.1"
   },

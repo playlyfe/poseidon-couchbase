@@ -36,6 +36,62 @@ module.exports = {
       "incr": {},
       "lock": {},
       "lockMulti": {},
+      "safeLock": {
+        "params": ["key", "options", "retries", "deferred"],
+        "body": """
+        var _result, _this = this;
+        if (retries == null) {
+          retries = 10;
+        }
+        _result = deferred != null ? deferred : Promise.pending();
+        this.instance.then(function(bucket) {
+          return bucket.lock(key, options, function(err, data) {
+            if (err != null) {
+              if (err.code === 11 && retries > 0) {
+                return setTimeout(function() {
+                  return _this.safeLock(key, options, retries - 1, _result);
+                }, Math.random() * 30);
+              } else {
+                return _result.reject([err, data]);
+              }
+            } else {
+              return _result.resolve(data);
+            }
+          });
+        });
+        return _result.promise;
+        """
+      },
+      "safeRemove": {
+        "params": ["key", "options", "retries", "deferred"],
+        "body": """
+        var _result, _this = this;
+        if (options == null) {
+          options = {};
+        }
+        if (retries == null) {
+          retries = 10;
+        }
+        _result = deferred != null ? deferred : Promise.pending();
+        this.instance.then(function(bucket) {
+          return bucket.remove(key, options, function(err, data) {
+            if (err != null) {
+              err.key = key;
+              if (err.code === 11 && retries > 0) {
+                return setTimeout(function() {
+                  return _this.safeRemove(key, options, retries - 1, _result);
+                }, Math.random() * 30);
+              } else {
+                return _result.reject([err, data]);
+              }
+            } else {
+              return _result.resolve(data);
+            }
+          });
+        });
+        return _result.promise;
+        """
+      }
       "observe": {},
       "observeMulti": {},
       "on": {},
