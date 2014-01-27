@@ -6,7 +6,9 @@ using **Bluebird promises**.
 ###
 Driver = require './driver'
 Bucket = require './connection'
+Promise = require 'bluebird'
 
 module.exports =
   Driver: Driver
   Bucket: Bucket
+  Promise: Promise

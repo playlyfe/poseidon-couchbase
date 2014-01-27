@@ -5,7 +5,7 @@ The `Driver` class stores configurations for multiple caches. It also caches
 the clients for quick access and reuse.
 ###
 Couchbase = require 'couchbase'
-{Promise} = require 'poseidon'
+Promise = require 'bluebird'
 
 
 class Driver
