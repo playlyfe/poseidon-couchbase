@@ -117,6 +117,7 @@ module.exports = {
       "unlock": {},
       "unlockMulti": {},
       "view": {
+        "wrap": false
         "return": ["ViewQuery"]
       }
     }
@@ -140,7 +141,7 @@ module.exports = {
         "return": ["ViewQuery"]
       },
       "firstPage": {
-        "return": ["Paginator"]
+        "return": [null, "Paginator"]
       }
     }
   },
