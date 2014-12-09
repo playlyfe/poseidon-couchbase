@@ -1,8 +1,7 @@
 module.exports = {
-  "Connection": {
+  "Bucket": {
     "require": {
       "Couchbase": "couchbase",
-      "ViewQuery": "./viewquery"
       "Driver": "./driver"
     },
     "constructor": {
@@ -13,29 +12,22 @@ module.exports = {
       return;
       """
     },
-    "type": "promise",
-    "members": {
-      "clientVersion": {},
-      "connectionTimeout": {},
-      "lcbVersion": {},
-      "operationTimeout": {},
-      "serverNodes": {}
-    }
+    "type": "object",
     "functions": {
-      "add": {},
-      "addMulti": {},
       "append": {},
-      "appendMulti": {},
-      "arithmeticMulti": {},
-      "decr": {},
+      "counter": {},
       "get": {},
-      "getDesignDoc": {},
+      "getAndLock": {},
+      "getAndTouch": {},
       "getMulti": {},
       "getReplica": {},
-      "getReplicaMulti":{},
-      "incr": {},
-      "lock": {},
-      "lockMulti": {},
+      "insert": {},
+      "prepend": {},
+      "remove": {},
+      "replace": {},
+      "touch": {},
+      "unlock": {},
+      "upsert": {}
       "safeLock": {
         "params": ["key", "options", "retries", "deferred"],
         "body": """
@@ -45,7 +37,7 @@ module.exports = {
         }
         _result = deferred != null ? deferred : Promise.pending();
         this.instance.then(function(bucket) {
-          return bucket.lock(key, options, function(err, data) {
+          return bucket.getAndLock(key, options, function(err, data) {
             if (err != null) {
               if (err.code === 11 && retries > 0) {
                 return setTimeout(function() {
@@ -92,75 +84,6 @@ module.exports = {
         return _result.promise;
         """
       }
-      "observe": {},
-      "observeMulti": {},
-      "on": {},
-      "prepend": {},
-      "prependMulti": {},
-      "remove": {},
-      "removeDesignDoc": {},
-      "removeMulti": {},
-      "replace": {},
-      "replaceMulti": {},
-      "set": {},
-      "setDesignDoc": {},
-      "setMulti": {},
-      "shutdown": {},
-      "stats": {},
-      "strError": {
-        "body": """
-        return this.instance(arguments[0]);
-        """
-      },
-      "touch": {},
-      "touchMulti": {},
-      "unlock": {},
-      "unlockMulti": {},
-      "view": {
-        "wrap": false
-        "return": ["ViewQuery"]
-      }
     }
   },
-  "ViewQuery": {
-    "require": {
-      "Paginator": "./paginator"
-    },
-    "constructor": {
-      "params": ["viewQuery"],
-      "body": """
-      this.instance = viewQuery;
-      return;
-      """
-    },
-    "type": "object",
-    "functions": {
-      "query": {},
-      "clone": {
-        "wrap": false,
-        "return": ["ViewQuery"]
-      },
-      "firstPage": {
-        "return": [null, "Paginator"]
-      }
-    }
-  },
-  "Paginator": {
-    "constructor": {
-      "params": ["paginator"],
-      "body": """
-      this.instance = paginator;
-      return;
-      """
-    },
-    "type": "object",
-    "functions": {
-      "hasNext": {
-        "wrap": false
-      },
-      "next": {},
-      "prev": {}
-    }
-  }
-
 }

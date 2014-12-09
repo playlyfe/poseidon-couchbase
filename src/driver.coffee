@@ -7,10 +7,11 @@ the clients for quick access and reuse.
 Couchbase = require 'couchbase'
 Promise = require 'bluebird'
 
-
 class Driver
   @_configuration: {}
+  @_clusters: {}
   @_connections: {}
+
   @configure: (connName, connConfig) ->
     throw new Error('Configuration object required') unless connConfig?
     @_configuration[connName] = connConfig
@@ -18,27 +19,25 @@ class Driver
 
   #TODO: Add authorization support
   @openConnection: (connName, options = {}) ->
-    throw Error('Connection not configured') unless @_configuration[connName]?
+    throw Error('Connection not configured') unless (config = @_configuration[connName])?
     if @_connections[connName]? then return @_connections[connName]
-    connection = (=>
-      _connection = Promise.pending()
-      client = new Couchbase.Connection @_configuration[connName], (err) ->
-        if err?
-          _connection.reject err
-        else
-          client.operationTimeout = options.operationTimeout ? 10000
-          _connection.resolve client
-      _connection.promise
-    )()
-    connection.then (client) =>
-      @_connections[connName] = connection
-    .catch (err) =>
-      @openConnection(connName)
+
+    _defer = Promise.defer()
+
+    if not (cluster = @_clusters[config.host])?
+      cluster = @_clusters[config.host] = new Couchbase.Cluster(config.host)
+
+    bucket = cluster.openBucket(config.bucket, (err) ->
+      if err then _defer.reject(err)
+      else _defer.resolve(bucket)
+    )
+
+    @_connections[connName] = _defer.promise
 
   @closeConnection: (connName) ->
     throw Error('Connection does not exist') unless @_connections[connName]?
-    @_connections[connName].then (client) =>
-      client.shutdown()
+    @_connections[connName].then (bucket) =>
+      bucket.disconnect()
       delete @_connections[connName]
     .done()
     return
