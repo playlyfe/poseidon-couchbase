@@ -12,7 +12,7 @@ module.exports = {
       return;
       """
     },
-    "type": "object",
+    "type": "promise",
     "functions": {
       "append": {},
       "counter": {},
