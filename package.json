@@ -42,7 +42,7 @@
     "lodash": "2.4.1"
   },
   "devDependencies": {
-    "poseidon": "0.2.2",
+    "poseidon": "0.3.0",
     "grunt": "~0.4.1",
     "chai": "~1.5.0",
     "grunt-cafe-mocha": "~0.1.1",
