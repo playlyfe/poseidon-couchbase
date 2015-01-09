@@ -44,7 +44,7 @@ module.exports = {
                   return _this.safeLock(key, options, retries - 1, _result);
                 }, Math.random() * 30);
               } else {
-                return _result.reject([err, data]);
+                return _result.reject(err);
               }
             } else {
               return _result.resolve(data);
@@ -74,7 +74,7 @@ module.exports = {
                   return _this.safeRemove(key, options, retries - 1, _result);
                 }, Math.random() * 30);
               } else {
-                return _result.reject([err, data]);
+                return _result.reject(err);
               }
             } else {
               return _result.resolve(data);
