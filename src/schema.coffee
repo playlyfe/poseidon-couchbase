@@ -36,7 +36,10 @@ module.exports = {
           retries = 10;
         }
         _result = deferred != null ? deferred : Promise.pending();
-        this.instance.then(function(bucket) {
+        this.instance.catch(function(err) {
+          _result.reject(err);
+          return _result.promise;
+        }).then(function(bucket) {
           return bucket.getAndLock(key, options, function(err, data) {
             if (err != null) {
               if (err.code === 11 && retries > 0) {
@@ -65,7 +68,10 @@ module.exports = {
           retries = 10;
         }
         _result = deferred != null ? deferred : Promise.pending();
-        this.instance.then(function(bucket) {
+        this.instance.catch(function(err) {
+          _result.reject(err);
+          return _result.promise;
+        }).then(function(bucket) {
           return bucket.remove(key, options, function(err, data) {
             if (err != null) {
               err.key = key;
