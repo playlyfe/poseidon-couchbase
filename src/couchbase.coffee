@@ -12,3 +12,4 @@ module.exports =
   Driver: Driver
   Bucket: Bucket
   Promise: Promise
+  ViewQuery: require('couchbase').ViewQuery

@@ -89,7 +89,11 @@ module.exports = {
         });
         return _result.promise;
         """
+      },
+      "query": {},
+      "manager": {
+        "wrap": false
       }
     }
-  },
+  }
 }
