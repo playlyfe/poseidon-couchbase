@@ -1,7 +1,7 @@
 {
   "name": "poseidon-couchbase",
   "description": "A future wrapper around the Couchbase driver using Poseidon.",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "keywords": [
     "bluebird",
     "promise",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "bluebird": "2.3.11",
-    "couchbase": "2.0.2",
+    "couchbase": "2.0.11",
     "lodash": "2.4.1"
   },
   "devDependencies": {
