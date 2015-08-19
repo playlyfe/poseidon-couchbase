@@ -1,11 +1,10 @@
 module.exports = {
   "Bucket": {
     "require": {
-      "Couchbase": "couchbase",
-      "Driver": "./driver"
+      "Couchbase": "couchbase"
     },
     "constructor": {
-      "params": ["connectionName"]
+      "params": ["Driver", "connectionName"]
       "body": """
       this.connectionName = connectionName;
       this.instance = Driver.openConnection(connectionName);
@@ -92,6 +91,9 @@ module.exports = {
       },
       "query": {},
       "manager": {
+        "wrap": false
+      },
+      "disconnect": {
         "wrap": false
       }
     }

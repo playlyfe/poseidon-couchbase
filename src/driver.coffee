@@ -8,17 +8,20 @@ Couchbase = require 'couchbase'
 Promise = require 'bluebird'
 
 class Driver
-  @_configuration: {}
-  @_clusters: {}
-  @_connections: {}
 
-  @configure: (connName, connConfig) ->
+  constructor: () ->
+    @_configuration = {}
+    @_clusters = {}
+    @_connections = {}
+    return
+
+  configure: (connName, connConfig) ->
     throw new Error('Configuration object required') unless connConfig?
     @_configuration[connName] = connConfig
     return
 
   #TODO: Add authorization support
-  @openConnection: (connName, options = {}) ->
+  openConnection: (connName, options = {}) ->
     throw Error('Connection not configured') unless (config = @_configuration[connName])?
     if @_connections[connName]? then return @_connections[connName]
 
@@ -34,7 +37,7 @@ class Driver
 
     @_connections[connName] = _defer.promise
 
-  @closeConnection: (connName) ->
+  closeConnection: (connName) ->
     throw Error('Connection does not exist') unless @_connections[connName]?
     @_connections[connName].then (bucket) =>
       bucket.disconnect()
@@ -42,13 +45,13 @@ class Driver
     .done()
     return
 
-  @reset: () ->
+  reset: () ->
     for connName, connConfig of @_configuration
       if @_connections[connName]? then @closeConnection(connName)
       delete @_configuration[connName]
     return
 
-  @shutdown: () ->
+  shutdown: () ->
     for connName, connConfig of @_configuration
       if @_connections[connName]? then @closeConnection(connName)
     return

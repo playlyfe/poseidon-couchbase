@@ -1,14 +1,16 @@
-{Driver, Bucket} = require '../index'
+Couchbase = require '../index'
+Driver = new Couchbase.Driver()
+ViewQuery = Couchbase.ViewQuery
+Bucket = Couchbase.Bucket
 
-Driver.configure('default', { host: ['localhost:8091'], bucket: 'staging-test' })
+Driver.configure('default', { host: ['localhost:8091'], bucket: 'staging' })
 
-bucket = new Bucket('default')
+bucket = new Bucket(Driver, 'default')
 
-bucket.view('game-stats', 'leaderboards', { skip: 3, limit: 5, stale: false })
+vq = ViewQuery.from('dev_1', '1')
+bucket.query(vq)
 .then (view) ->
-  view.firstPage()
-.spread (results, paginator) ->
-  console.log results
-  paginator.next()
-.then (results) ->
-  console.log results
+  console.log view
+.finally ->
+  bucket.disconnect()
+.done()

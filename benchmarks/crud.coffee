@@ -1,5 +1,6 @@
 Couchbase = require 'couchbase'
 {Driver, Bucket} = require '../index'
+Driver = new Driver()
 Benchmark = require 'benchmark'
 
 suite = new Benchmark.Suite()
@@ -21,7 +22,7 @@ simpleCouchbase = (deferred) ->
   )
 
 poseidonCouchbase = (deferred) ->
-  poseidonCb = new Bucket('default')
+  poseidonCb = new Bucket(Driver, 'default')
   poseidonCb.remove('test')
   .catch (err) ->
     poseidonCb.insert('test', { foo: 'bar' })
@@ -52,6 +53,8 @@ nativeCb = cluster.openBucket('objects', (err) ->
   )
   .on('complete', () ->
     console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    Driver.shutdown()
+    nativeCb.disconnect()
   )
   suite.run()
 )
